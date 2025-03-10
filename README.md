@@ -125,8 +125,8 @@ Check out the live demo: [Shopido Live](https://shopidonet.netlify.app/)
 ---
 
 ## 🤝 Want to Help?
-We welcome contributions! Fork the project, make your changes, and submit a pull request.
 
+Put the star ⭐ if you like the project.
 
 ---
 
