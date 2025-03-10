@@ -94,10 +94,16 @@ Shopido/
 
 ## 🔗 Live Demo & Preview
 Check out the live demo: [Shopido Live](https://shopidonet.netlify.app/)
+<br>
 
 ![Shopido Preview](images/out1.png)
+<br>
 ![Shopido Preview](images/out2.png)
+<br>
+
 ![Shopido Preview](images/out3.png)
+<br>
+
 ![Shopido Preview](images/out4.png)
 
 ---
