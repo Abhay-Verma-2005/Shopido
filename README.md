@@ -127,10 +127,6 @@ Check out the live demo: [Shopido Live](https://shopidonet.netlify.app/)
 ## 🤝 Want to Help?
 We welcome contributions! Fork the project, make your changes, and submit a pull request.
 
----
-
-## 📜 License
-This project is **open-source** under the **MIT License**.
 
 ---
 
