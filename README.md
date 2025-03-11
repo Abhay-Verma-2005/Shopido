@@ -6,6 +6,11 @@ It helps users browse products, add them to their cart, and check out smoothly.
 The site is responsive, meaning it looks great on any device!
 
 ---
+## 🔗 Live Demo & Preview
+Check out the live demo: [Shopido Live](https://shopidonet.netlify.app/)
+<br>
+<br>
+---
 
 ## 🚀 Key Features
 ### ✅ Easy Shopping Experience
@@ -92,10 +97,7 @@ Shopido/
 
 ---
 
-## 🔗 Live Demo & Preview
-Check out the live demo: [Shopido Live](https://shopidonet.netlify.app/)
-<br>
-<br>
+
 <br>
 <br>
 <br>
