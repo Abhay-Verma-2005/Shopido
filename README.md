@@ -108,7 +108,7 @@ Shopido/
 <br>
 <br>
 <br>
-
+ 
 ![Shopido Preview](images/out1.png)
 <br>
 <br>
