@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Use env-configured API host; fall back to sensible defaults for dev/prod
-const API_HOST =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
+// Use env-configured API host; default to deployed backend
+const API_HOST = (import.meta.env.VITE_API_URL || 'https://shopido-backend-v12.vercel.app').replace(/\/+$/, '');
 
 // Create axios instance with base configuration
 const api = axios.create({

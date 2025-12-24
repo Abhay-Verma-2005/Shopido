@@ -4,11 +4,8 @@ import CategoryFilter from '../components/CategoryFilter';
 import ProductCard from '../components/ProductCard';
 import { getProducts, searchProducts, filterByCategory } from '../api/productApi';
 
-const API_HOST =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-
-const ASSET_BASE = `${API_HOST}/public/`;
+const API_HOST = (import.meta.env.VITE_API_URL || 'https://shopido-backend-v12.vercel.app').replace(/\/+$/, '');
+const ASSET_BASE = `${API_HOST}/public`;
 
 const Home = () => {
   const [products, setProducts] = useState([]);
