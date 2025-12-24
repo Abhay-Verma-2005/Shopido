@@ -1,44 +1,14 @@
-const PRODUCTS_SOURCE_URL = (process.env.PRODUCTS_JSON_URL || process.env.FAKESTORE_API_URL || 'https://raw.githubusercontent.com/Abhay-Verma-2005/Abhay-Verma-Files/main/products.json').replace(/\/+$/, '');
-const REQUEST_TIMEOUT_MS = 8000;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+import axios from 'axios';
 
-let cachedProducts = [];
-let lastFetchedAt = 0;
+const PRODUCTS_JSON_URL = (process.env.PRODUCTS_JSON_URL || 'https://raw.githubusercontent.com/Abhay-Verma-2005/Abhay-Verma-Files/main/products.json').replace(/\/+$/, '');
 
-// Fetch products from FakeStore with simple in-memory caching
+// Fetch fresh products from the GitHub-hosted JSON source
 const fetchProducts = async () => {
-  const now = Date.now();
-  const isCacheValid = cachedProducts.length > 0 && (now - lastFetchedAt) < CACHE_TTL_MS;
-
-  if (isCacheValid) {
-    return cachedProducts;
+  const { data } = await axios.get(PRODUCTS_JSON_URL, { timeout: 8000 });
+  if (!Array.isArray(data)) {
+    throw new Error('Invalid products payload');
   }
-
-  try {
-    // Use native fetch (undici) to avoid occasional axios+serverless TLS hiccups
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-    const response = await fetch(PRODUCTS_SOURCE_URL, { signal: controller.signal });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`Upstream responded ${response.status}`);
-    }
-
-    const data = await response.json();
-    cachedProducts = Array.isArray(data) ? data : [];
-    lastFetchedAt = now;
-    return cachedProducts;
-  } catch (error) {
-    // If we have cached data, serve it as a stale fallback instead of failing outright
-    const fallback = cachedProducts.length ? cachedProducts : null;
-    console.error('Fetch products error:', error.message);
-    if (fallback) {
-      return fallback;
-    }
-    throw error;
-  }
+  return data;
 };
 
 // GET /api/products - return limited list
@@ -53,7 +23,7 @@ export const getProducts = async (req, res) => {
     res.json({ products: payload });
   } catch (error) {
     console.error('Get products error:', error.message);
-    res.status(502).json({ message: 'Upstream product service unavailable' });
+    res.status(502).json({ message: 'Failed to fetch products' });
   }
 };
 
@@ -70,7 +40,7 @@ export const searchProducts = async (req, res) => {
     res.json({ products: filtered });
   } catch (error) {
     console.error('Search products error:', error.message);
-    res.status(502).json({ message: 'Upstream product service unavailable' });
+    res.status(502).json({ message: 'Failed to fetch products' });
   }
 };
 
@@ -82,7 +52,7 @@ export const getCategories = async (_req, res) => {
     res.json({ categories });
   } catch (error) {
     console.error('Get categories error:', error.message);
-    res.status(502).json({ message: 'Upstream product service unavailable' });
+    res.status(502).json({ message: 'Failed to fetch products' });
   }
 };
 
@@ -99,6 +69,6 @@ export const filterByCategory = async (req, res) => {
     res.json({ products: filtered });
   } catch (error) {
     console.error('Filter products error:', error.message);
-    res.status(502).json({ message: 'Upstream product service unavailable' });
+    res.status(502).json({ message: 'Failed to fetch products' });
   }
 };
