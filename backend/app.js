@@ -12,34 +12,33 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS: allow configured origins (env list, Vercel deploy, local dev) and handle preflight
-const envOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '')
-	.split(',')
-	.map((o) => o.trim())
-	.filter(Boolean);
-
-const defaultOrigins = [
-	'http://localhost:5173',
-	'http://127.0.0.1:5173',
-	process.env.FRONTEND_URL,
-	process.env.FRONTEND_URL_2,
-	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
-];
-
-const allowedOrigins = [...new Set([...envOrigins, ...defaultOrigins].filter(Boolean))];
-
+// CORS configuration
 const corsOptions = {
-	origin: (origin, callback) => {
-		if (!origin) return callback(null, true); // allow same-origin/SSR/health checks
-		if (allowedOrigins.includes(origin)) return callback(null, true);
-		console.warn(`CORS blocked origin: ${origin}`);
-		return callback(null, false); // respond with 403 instead of 500
+	origin: function (origin, callback) {
+		// Allow requests with no origin (mobile apps, Postman, etc.)
+		if (!origin) return callback(null, true);
+		
+		// Get allowed origins from environment variable or use defaults
+		const allowedOrigins = process.env.CORS_ORIGINS 
+			? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
+			: ['http://localhost:5173', 'http://127.0.0.1:5173'];
+		
+		if (allowedOrigins.includes(origin)) {
+			callback(null, true);
+		} else {
+			console.warn(`CORS blocked origin: ${origin}`);
+			callback(null, false);
+		}
 	},
 	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+	exposedHeaders: ['Content-Length', 'X-Request-Id'],
+	maxAge: 600,
+	optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 // Body parsers
 app.use(express.json());
