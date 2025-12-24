@@ -12,9 +12,34 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// CORS configuration (defaults to local frontend)
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+// CORS: allow configured origins (env list, Vercel deploy, local dev) and handle preflight
+const envOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || '')
+	.split(',')
+	.map((o) => o.trim())
+	.filter(Boolean);
+
+const defaultOrigins = [
+	'http://localhost:5173',
+	'http://127.0.0.1:5173',
+	process.env.FRONTEND_URL,
+	process.env.FRONTEND_URL_2,
+	process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+];
+
+const allowedOrigins = [...new Set([...envOrigins, ...defaultOrigins].filter(Boolean))];
+
+const corsOptions = {
+	origin: (origin, callback) => {
+		if (!origin) return callback(null, true); // allow same-origin/SSR/health checks
+		if (allowedOrigins.includes(origin)) return callback(null, true);
+		console.warn(`CORS blocked origin: ${origin}`);
+		return callback(null, false); // respond with 403 instead of 500
+	},
+	credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Body parsers
 app.use(express.json());
