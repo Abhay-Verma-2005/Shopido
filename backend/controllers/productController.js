@@ -1,5 +1,4 @@
-const FAKE_STORE_API_BASE = (process.env.FAKESTORE_API_URL || 'https://fakestoreapi.com').replace(/\/+$/, '');
-const FAKE_STORE_API = `${FAKE_STORE_API_BASE}/products`;
+const PRODUCTS_SOURCE_URL = (process.env.PRODUCTS_JSON_URL || process.env.FAKESTORE_API_URL || 'https://raw.githubusercontent.com/Abhay-Verma-2005/Abhay-Verma-Files/main/products.json').replace(/\/+$/, '');
 const REQUEST_TIMEOUT_MS = 8000;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -20,7 +19,7 @@ const fetchProducts = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    const response = await fetch(FAKE_STORE_API, { signal: controller.signal });
+    const response = await fetch(PRODUCTS_SOURCE_URL, { signal: controller.signal });
     clearTimeout(timeoutId);
 
     if (!response.ok) {
