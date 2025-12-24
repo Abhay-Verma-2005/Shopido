@@ -23,12 +23,18 @@ const corsOptions = {
 			? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
 			: ['http://localhost:5173', 'http://127.0.0.1:5173'];
 		
+		// Check exact match
 		if (allowedOrigins.includes(origin)) {
-			callback(null, true);
-		} else {
-			console.warn(`CORS blocked origin: ${origin}`);
-			callback(null, false);
+			return callback(null, true);
 		}
+		
+		// Allow all *.vercel.app domains (for Vercel preview deployments)
+		if (origin.endsWith('.vercel.app')) {
+			return callback(null, true);
+		}
+		
+		console.warn(`CORS blocked origin: ${origin}`);
+		callback(null, false);
 	},
 	credentials: true,
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
