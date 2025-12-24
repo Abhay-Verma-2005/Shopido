@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const FAKE_STORE_API_BASE = (process.env.FAKESTORE_API_URL || 'https://fakestoreapi.com').replace(/\/+$/, '');
 const FAKE_STORE_API = `${FAKE_STORE_API_BASE}/products`;
 const REQUEST_TIMEOUT_MS = 8000;
@@ -18,8 +16,19 @@ const fetchProducts = async () => {
   }
 
   try {
-    const response = await axios.get(FAKE_STORE_API, { timeout: REQUEST_TIMEOUT_MS });
-    cachedProducts = response.data || [];
+    // Use native fetch (undici) to avoid occasional axios+serverless TLS hiccups
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    const response = await fetch(FAKE_STORE_API, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Upstream responded ${response.status}`);
+    }
+
+    const data = await response.json();
+    cachedProducts = Array.isArray(data) ? data : [];
     lastFetchedAt = now;
     return cachedProducts;
   } catch (error) {
